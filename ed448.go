@@ -2,6 +2,7 @@ package ed448
 
 import (
 	"crypto/rand"
+
 	"golang.org/x/crypto/sha3"
 )
 
@@ -56,40 +57,4 @@ func (ed *curveT) Verify(signature [signatureBytes]byte, message []byte, pub [pu
 func (ed *curveT) ComputeSecret(private [privKeyBytes]byte, public [pubKeyBytes]byte) (secret [Size512]byte) {
 	k := privateKey(private)
 	return sha3.Sum512(ed.computeSecret(k.secretKey(), public[:]))
-}
-
-// ModQ produces a byte array mod Q (prime order)
-func ModQ(serial []byte) []byte {
-	words := [16]word_t{}
-	deserializeModQ(words[:], serial)
-	out := make([]byte, 56)
-	wordsToBytes(out, words[:])
-	return out
-}
-
-// Mul multiplies two large values
-func Mul(x [56]byte, y [56]byte) (out [56]byte) {
-	desX, _ := deserialize(x)
-	desY, _ := deserialize(y)
-	desX.mulCopy(desX, desY)
-	serialize(out[:], desX)
-	return out
-}
-
-// Add two large values
-func Add(x [56]byte, y [56]byte) (out [56]byte) {
-	desX, _ := deserialize(x)
-	desY, _ := deserialize(y)
-	desX.add(desX, desY)
-	serialize(out[:], desX)
-	return out
-}
-
-// Sub subtracts two large values
-func Sub(x [56]byte, y [56]byte) (out [56]byte) {
-	desX, _ := deserialize(x)
-	desY, _ := deserialize(y)
-	desX.sub(desX, desY)
-	serialize(out[:], desX)
-	return out
 }
